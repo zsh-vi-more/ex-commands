@@ -1,0 +1,9 @@
+
+local curcontext=zvm-cmd::: prompt rprompt cmd
+
+zstyle -s :zle:zvm-colon-command  prompt  prompt ||  prompt=': '
+zstyle -s :zle:zvm-colon-command rprompt rprompt || rprompt=''
+
+vared -p $prompt -r $rprompt cmd
+
+# vim:syntax=zsh
