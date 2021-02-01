@@ -6,6 +6,6 @@
 autoload -Uz vi-colon-command _zvm_colon_cmd
 # }}}
 
-bindkey -M vicmd : vi-colon-command
+bindkey -M vicmd : ex-command
 
 # vim:foldmethod=marker
