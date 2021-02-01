@@ -2,12 +2,17 @@
 local curcontext=zvm-cmd::: prompt rprompt REPLY
 local -a cmd
 
-zstyle -s :zle:zvm-ex-command  prompt  prompt ||  prompt=': '
+zstyle -s :zle:zvm-ex-command  prompt  prompt ||  prompt='%B:%b'
 zstyle -s :zle:zvm-ex-command rprompt rprompt || rprompt=''
 
 vared -p $prompt -r $rprompt REPLY
 
 cmd=("${(@z)REPLY}")
+
+# TODO: Handle:
+# - '%' prefix
+# - s/// command
+# - ?
 
 # for now, just try dequoting the first argument and running a widget
 if [[ -n ${(Mk)widgets:#${(Q)cmd[1]}} ]]; then
