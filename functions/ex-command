@@ -1,11 +1,11 @@
 
 local curcontext=zvm-cmd::: prompt rprompt REPLY
 local -a cmd
+local PROMPT RPROMPT
 
-zstyle -s :zle:zvm-ex-command  prompt  prompt ||  prompt='%B:%b'
-zstyle -s :zle:zvm-ex-command rprompt rprompt || rprompt=''
+zstyle -s :zle:zvm-ex-command prompt prompt || prompt=':'
 
-vared -p $prompt -r $rprompt REPLY
+read-from-minibuffer "$prompt"
 
 cmd=("${(@z)REPLY}")
 
