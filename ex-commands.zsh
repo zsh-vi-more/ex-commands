@@ -3,9 +3,10 @@
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 [[ $PMSPEC = *f* ]] || fpath+=("${0:h}/functions")
-autoload -Uz vi-colon-command _zvm_colon_cmd
+autoload -Uz ex-command _zvm_colon_cmd
 # }}}
-
+zstyle ':completion:zvm-cmd:*' completer _zvm_ex_command
+zle -N ex-command
 bindkey -M vicmd : ex-command
 
 # vim:foldmethod=marker
