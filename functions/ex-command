@@ -1,11 +1,15 @@
+emulate -L zsh
+setopt extendedglob
 
-local curcontext=zvm-cmd::: prompt rprompt REPLY
-local -a cmd
-local PROMPT RPROMPT
+local curcontext=zvm-cmd::: prompt REPLY MATCH MBEGIN MEND
+local -a cmd match mbegin mend
+
+# Keep history of excmds
+fc -ap "${HISTFILE}.excmd"
 
 zstyle -s :zle:zvm-ex-command prompt prompt || prompt=':'
 
-read-from-minibuffer "$prompt"
+read-from-minibuffer "$prompt" || return 1
 
 cmd=("${(@z)REPLY}")
 
@@ -18,5 +22,6 @@ cmd=("${(@z)REPLY}")
 if [[ -n ${(Mk)widgets:#${(Q)cmd[1]}} ]]; then
 	zle ${(Q)cmd} -w
 fi
+print -sr "$REPLY"
 
 # vim:syntax=zsh
