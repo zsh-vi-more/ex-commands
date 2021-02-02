@@ -1,3 +1,6 @@
+local -l method gmethod=ere
+[[ -o rematchpcre ]] && gmethod=pcre
+
 emulate -L zsh
 setopt extendedglob
 
@@ -8,6 +11,7 @@ local -a cmd match mbegin mend
 fc -ap "${HISTFILE}.excmd"
 
 zstyle -s :zle:zvm-ex-command prompt prompt || prompt=':'
+zstyle -s :zle:zvm-ex-command method method || method=$gmethod
 
 read-from-minibuffer "$prompt" || return 1
 
@@ -26,14 +30,25 @@ elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 	local d=$match[1]
 	if [[ $REPLY = (#b)s$d((\\?|\\$d|[^\\$d])#)$d((\\?|\\$d|[^\\$d])#)($d*|) ]]; then
 		# TODO: Parse flags, figure out if regexp-replace can take them
-		local flag
+		local -aU pcreflags
+		local -i global insens
 		for flag in ${(s::)match[5]:1}; case $flag in
-			g) ;; 
-			i) ;;
+			g) global=1 ;;
+			G) method=glob ;;
+			p) method=pcre ;;
+			i) insens=1 ;;
+			I) insens=0 ;;
 			*) zle -M "$0: unknown flag: ${(q-)flag}"
 		esac
 		# remove \$delim
 		local find=${match[1]//\\$d/$d} repl=${match[3]//\\$d/$d}
+		case $method in
+			ere) setopt norematchpcre ;;
+			pcre)
+				setopt rematchpcre
+				((insens)) && find='(?i)'$find
+				;;
+		esac
 		# Shorthand: \N -> $match[n], & -> $MATCH
 		# Use ${match:1}, it correctly removes the extra backslash for \\ and \&
 		# If ${match:1} is a digit, then ${match[N]}
@@ -41,7 +56,16 @@ elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 		repl=${repl//(#m)(\\\\|\\&|&|\\[[:digit:]])/${${${MATCH:1}/(#m)[[:digit:]]/'${match['$MATCH']}'}:-'$MATCH'}}
 		# get or save $EXLASTSEARCH
 		typeset -g EXLASTSEARCH=${${find:=$EXLASTSEARCH}:-$LASTSEARCH}
-		regexp-replace BUFFER "$find" "$repl"
+
+		case $global$method in
+			0*re) if [[ $RBUFFER =~ $2 ]] && RBUFFER=${RBUFFER[1,MBEGIN-1]}${(e)repl}${RBUFFER[MEND+1,-1]} ;;
+			1*re) regexp-replace BUFFER "$find" "$repl" ;;
+			0glob) RBUFFER=${RBUFFER/(#b)$~find/${(e)repl}} ;; 
+			1glob) BUFFER=${BUFFER//(#b)$~find/${(e)repl}} ;;
+			*)
+				zle -M "$WIDGET: Unknown method: $method"
+				return 1
+		esac
 	else
 		zle -M "$WIDGET: Bad substitution"
 		return 1
