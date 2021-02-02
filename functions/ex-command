@@ -43,11 +43,11 @@ elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 		typeset -g EXLASTSEARCH=${${find:=$EXLASTSEARCH}:-$LASTSEARCH}
 		regexp-replace BUFFER "$find" "$repl"
 	else
-		zle -M "$0: Bad substitution"
+		zle -M "$WIDGET: Bad substitution"
 		return 1
 	fi
 else
-	zle -M "$0: Unknown command: ${cmd[1]}"
+	zle -M "$WIDGET: Unknown command: ${cmd[1]}"
 	return 1
 fi
 print -sr "$REPLY"
