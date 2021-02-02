@@ -20,7 +20,35 @@ cmd=("${(@z)REPLY}")
 
 # for now, just try dequoting the first argument and running a widget
 if [[ -n ${(Mk)widgets:#${(Q)cmd[1]}} ]]; then
-	zle ${(Q)cmd} -w
+	zle ${(Q)cmd} -w "${(Q)cmd[2,-1]}"
+
+elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
+	local d=$match[1]
+	if [[ $REPLY = (#b)s$d((\\?|\\$d|[^\\$d])#)$d((\\?|\\$d|[^\\$d])#)($d*|) ]]; then
+		# TODO: Parse flags, figure out if regexp-replace can take them
+		local flag
+		for flag in ${(s::)match[5]:1}; case $flag in
+			g) ;; 
+			i) ;;
+			*) zle -M "$0: unknown flag: ${(q-)flag}"
+		esac
+		# remove \$delim
+		local find=${match[1]//\\$d/$d} repl=${match[3]//\\$d/$d}
+		# Shorthand: \N -> $match[n], & -> $MATCH
+		# Use ${match:1}, it correctly removes the extra backslash for \\ and \&
+		# If ${match:1} is a digit, then ${match[N]}
+		# If ${match:1} is empty, then $MATCH
+		repl=${repl//(#m)(\\\\|\\&|&|\\[[:digit:]])/${${${MATCH:1}/(#m)[[:digit:]]/'${match['$MATCH']}'}:-'$MATCH'}}
+		# get or save $EXLASTSEARCH
+		typeset -g EXLASTSEARCH=${${find:=$EXLASTSEARCH}:-$LASTSEARCH}
+		regexp-replace BUFFER "$find" "$repl"
+	else
+		zle -M "$0: Bad substitution"
+		return 1
+	fi
+else
+	zle -M "$0: Unknown command: ${cmd[1]}"
+	return 1
 fi
 print -sr "$REPLY"
 
