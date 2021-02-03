@@ -1,3 +1,6 @@
+case $2 in
+
+(|:)s(|ubstitute))
 print -Pr '
 %Bs[ubstitute]%b%F{blue}/%f%F{red}pattern%f%F{blue}/%f%F{red}replacement%f%F{blue}/%f%F{green}flags%f
 	The %F{blue}/pattern delimiter/%f can be any non-alphanumeric character other than %B&%b.
@@ -15,5 +18,10 @@ print -Pr '
 	  %Bi%b: (PCRE|glob only) Replace %Bcase-insensitively%b
 	  %BI%b: Replace %Bcase-sensitively%b
 	  %Bp%b: Treat %F{red}pattern%f as a %BPCRE%b.
+' | less -R ;;
 
-' | less -R
+*) return 1
+
+esac
+
+# vim:ft=zsh

@@ -85,4 +85,4 @@ else
 fi
 print -sr "$REPLY"
 
-# vim:syntax=zsh
+# vim:ft=zsh
