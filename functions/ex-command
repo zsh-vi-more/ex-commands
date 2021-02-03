@@ -33,6 +33,7 @@ elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 		local -aU pcreflags
 		local -i global insens
 		for flag in ${(s::)match[5]:1}; case $flag in
+			f) fixed=1  ;;
 			g) global=1 ;;
 			G) method=glob ;;
 			p) method=pcre ;;
@@ -74,6 +75,7 @@ elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 		zle -M "$WIDGET: Bad substitution"
 		return 1
 	fi
+	zle -R
 else
 	zle -M "$WIDGET: Unknown command: ${cmd[1]}"
 	return 1
