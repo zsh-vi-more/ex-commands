@@ -17,19 +17,13 @@ read-from-minibuffer "$prompt" || return 1
 
 cmd=("${(@z)REPLY}")
 
-# TODO: Handle:
-# - '%' prefix
-# - s/// command
-# - ?
-
-# for now, just try dequoting the first argument and running a widget
+# try dequoting the first argument and running a widget
 if [[ -n ${(Mk)widgets:#${(Q)cmd[1]}} ]]; then
 	zle ${(Q)cmd} -w "${(Q)cmd[2,-1]}"
 
 elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 	local d=$match[1]
 	if [[ $REPLY = (#b)s$d((\\?|\\$d|[^\\$d])#)$d((\\?|\\$d|[^\\$d])#)($d*|) ]]; then
-		# TODO: Parse flags, figure out if regexp-replace can take them
 		local -aU pcreflags
 		local -i global insens
 		for flag in ${(s::)match[5]:1}; case $flag in
@@ -48,7 +42,6 @@ elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 			pcre)
 				setopt rematchpcre
 				((insens)) && find='(?i)'$find
-				;;
 		esac
 		if [[ $method != fixed ]]; then
 			# Shorthand: \N -> $match[n], & -> $MATCH
