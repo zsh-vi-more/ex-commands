@@ -27,7 +27,7 @@ elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 		local -aU pcreflags
 		local -i global insens
 		for flag in ${(s::)match[5]:1}; case $flag in
-			f) fixed=1  ;;
+			f) method=fixed ;;
 			g) global=1 ;;
 			G) method=glob ;;
 			p) method=pcre ;;
