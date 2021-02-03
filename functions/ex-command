@@ -27,13 +27,14 @@ elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 		local -aU pcreflags
 		local -i global insens
 		for flag in ${(s::)match[5]:1}; case $flag in
+			e) method=ere ;;
 			f) method=fixed ;;
-			g) global=1 ;;
 			G) method=glob ;;
 			p) method=pcre ;;
+			g) global=1 ;;
 			i) insens=1 ;;
 			I) insens=0 ;;
-			*) zle -M "$0: unknown flag: ${(q-)flag}"
+			*) zle -M "$0: unknown flag, ignored: ${(q-)flag}"
 		esac
 		# unescape escaped delimiters
 		local find=${match[1]//\\$d/$d} repl=${match[3]//\\$d/$d}
@@ -42,6 +43,9 @@ elif [[ $REPLY = (#b)s([^[:alnum:]])* ]]; then
 			pcre)
 				setopt rematchpcre
 				((insens)) && find='(?i)'$find
+				;;
+			glob)
+				((insens)) &&find='(#i)'$find
 		esac
 		if [[ $method != fixed ]]; then
 			# Shorthand: \N -> $match[n], & -> $MATCH
