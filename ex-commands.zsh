@@ -3,7 +3,7 @@
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 [[ $PMSPEC = *f* ]] || fpath+=("${0:h}/functions")
-autoload -Uz read-from-minibuffer regexp-replace ex-command{,help} _zvm_ex_command
+autoload -Uz read-from-minibuffer regexp-replace ex-command{,-help} _zvm_ex_command
 # }}}
 zstyle ':completion:zvm-cmd:*' completer _zvm_ex_command
 zle -N ex-command
