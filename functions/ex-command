@@ -61,7 +61,12 @@ elif [[ $REPLY = (#b)s(|ubstitute)([^[:alnum:]\&])* ]]; then
 			repl=${repl//(#m)(\\\\|\\&|&|\\[[:digit:]])/${${${MATCH:1}/(#m)[[:digit:]]/'${match['$MATCH']}'}:-'$MATCH'}}
 		fi
 		# get or save $EXLASTSEARCH
-		typeset -g EXLASTSEARCH=${${find:=$EXLASTSEARCH}:-$LASTSEARCH}
+		typeset -g EXLASTSEARCH=${find:=${EXLASTSEARCH:-${LASTSEARCH}}}
+
+		if [[ -z $find ]]; then
+			zle -M "$WIDGET: No previous search"
+			return 1
+		fi
 
 		case $global$method in
 			0*re) [[ $RBUFFER =~ $2 ]] && RBUFFER=${RBUFFER[1,MBEGIN-1]}${(e)repl}${RBUFFER[MEND+1,-1]} ;;
