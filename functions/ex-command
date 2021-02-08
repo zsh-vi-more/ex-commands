@@ -8,7 +8,7 @@ local curcontext=zvm-cmd::: prompt REPLY MATCH MBEGIN MEND
 local -a cmd match mbegin mend
 
 # Keep history of excmds
-fc -ap "${HISTFILE}.excmd"
+fc -ap "${HISTFILE%.excmd}.excmd"
 
 zstyle -s :zle:zvm-ex-command prompt prompt || prompt=':'
 zstyle -s :zle:zvm-ex-command method method || method=$gmethod
