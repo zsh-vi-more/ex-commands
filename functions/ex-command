@@ -17,15 +17,8 @@ read-from-minibuffer "$prompt" || return 1
 
 cmd=("${(@z)REPLY}")
 
-# try dequoting the first argument and running a widget
-if [[ $cmd[1] = help && -n ${(Mk)widgets:#${(Q)cmd[2]}} ]]; then
-	zle -M "$0: ${(Q)cmd[2]} is a zle widget. See zshzle(1)"
-
-elif [[ $cmd[1] = help ]]; then
+if [[ $cmd[1] = help ]]; then
 	ex-command-help ${(Q)cmd[2]}
-
-elif [[ -n ${(Mk)widgets:#${(Q)cmd[1]}} ]]; then
-	zle ${(Q)cmd} -w "${(Q)cmd[2,-1]}"
 
 elif [[ $REPLY = (#b)s(|ubstitute)([^[:alnum:]\&])* ]]; then
 	local d=$match[2]
@@ -84,6 +77,11 @@ elif [[ $REPLY = (#b)s(|ubstitute)([^[:alnum:]\&])* ]]; then
 		return 1
 	fi
 	zle -R
+
+# try dequoting the first argument and running a widget
+elif [[ -n ${(Mk)widgets:#${(Q)cmd[1]}} ]]; then
+	zle ${(Q)cmd} -w "${(Q)cmd[2,-1]}"
+
 else
 	zle -M "$WIDGET: Unknown command: ${cmd[1]}"
 	return 1

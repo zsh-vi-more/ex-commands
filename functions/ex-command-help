@@ -18,10 +18,19 @@ print -Pr '
 	  %Bi%b: (PCRE|glob only) Replace %Bcase-insensitively%b
 	  %BI%b: Replace %Bcase-sensitively%b
 	  %Bp%b: Treat %F{red}pattern%f as a %BPCRE%b.
-' | less -R ;;
+' | less -R
+zle -R
+zle redisplay
+;;
 
-*) return 1
+*)
+if [[ ${(Mk)widgets:#$1} ]]; then
+	zle -M "$0: $1 is a zle widget. See zshzle(1)"
+else
+	zle -M "$0: Unknown command: $1"
+fi
 
 esac
+
 
 # vim:ft=zsh
