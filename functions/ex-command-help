@@ -1,13 +1,13 @@
-case $2 in
+case $1 in
 
 (|:)s(|ubstitute))
 print -Pr '
-%Bs[ubstitute]%b%F{blue}/%f%F{red}pattern%f%F{blue}/%f%F{red}replacement%f%F{blue}/%f%F{green}flags%f
+:%Bs[ubstitute]%b%F{blue}/%f%F{red}pattern%f%F{blue}/%f%F{red}replacement%f[%F{blue}/%f%F{green}flags%f]
 	The %F{blue}/pattern delimiter/%f can be any non-alphanumeric character other than %B&%b.
-	Any $parameters, $(command substitutions), etc. in %F{red}replacment%f are expanded.
+	Any \$parameters, \$(command substitutions), etc. in %F{red}replacment%f are expanded.
 	In all %F{green}mode%fs except %F{green}fixed%f, the %B&%b character will be replaced with the whole
 	matched pattern, and any instnces of %B\1%b, %B\2%b ... %B\9%b will be replaced with the
-	matched pattern in the %Bn%bth pair of (). (The parameters %B$MATCH%b and %B$match[1,9]%b
+	matched pattern in the %Bn%bth pair of (). (The parameters %B\$MATCH%b and %B\$match[1,9]%b
 	are used internally.)
 
 	%F{green}Flags%f:
