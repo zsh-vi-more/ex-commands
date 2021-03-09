@@ -6,7 +6,16 @@
 autoload -Uz read-from-minibuffer regexp-replace ex-command{,-help} _zvm_ex_command
 # }}}
 zstyle ':completion:zvm-cmd:*' completer _zvm_ex_command
+autoload -Uz zed zed-set-file-name
 zle -N ex-command
 bindkey -M vicmd : ex-command
+zed-set-file-name-arg(){
+	emulate -L zsh
+	zed_file_name=$1
+}
 
+zle -N edit   zed
+zle -N e      zed
+zle -N saveas zed-set-file-name-arg
+zle -N sav    zed-set-file-name-arg
 # vim:foldmethod=marker
