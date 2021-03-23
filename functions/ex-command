@@ -4,19 +4,20 @@ local -l method gmethod=ere
 emulate -L zsh
 setopt extendedglob
 
-local curcontext=zvm-cmd::: prompt REPLY MATCH MBEGIN MEND
+local curcontext=zvm-cmd::: p REPLY MATCH MBEGIN MEND
 local -a cmd match mbegin mend
 
 # Keep history of excmds
 fc -ap "${HISTFILE%.excmd}.excmd"
 
-zstyle -s :zle:zvm-ex-command prompt prompt || prompt=':'
+zstyle -s :zle:zvm-ex-command prompt p || p=':'
 zstyle -s :zle:zvm-ex-command method method || method=$gmethod
 
-read-from-minibuffer "$prompt" || return 1
+read-from-minibuffer "$p" || return 1
 
 cmd=("${(@z)REPLY}")
 
+set -x
 if [[ $cmd[1] = help ]]; then
 	ex-command-help ${(Q)cmd[2]}
 
@@ -80,12 +81,12 @@ elif [[ $REPLY = (#b)s(|ubstitute)([^[:alnum:]\&])* ]]; then
 
 # try dequoting the first argument and running a widget
 elif [[ -n ${(Mk)widgets:#${(Q)cmd[1]}} ]]; then
-	zle ${(Q)cmd} -w "${(Q)cmd[2,-1]}"
-
+	zle ${(Q)cmd[1]} -w - "${(@Q)cmd[2,-1]}"
 else
 	zle -M "$WIDGET: Unknown command: ${cmd[1]}"
 	return 1
 fi
 print -sr "$REPLY"
-
+zle reset-prompt
+return 0
 # vim:ft=zsh
