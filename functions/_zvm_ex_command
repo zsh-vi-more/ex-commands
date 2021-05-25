@@ -3,4 +3,5 @@
 _widgets
 
 # TODO: compadd words: com
+compadd -J ex-commands s substitute help
 #compadd
