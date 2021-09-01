@@ -14,7 +14,8 @@ print -Pr '
 	  %Be%b: Treat %F{red}pattern%f as a %BPOSIX ERE%b.
 	  %Bf%b: Treat %F{red}pattern%f as a %Bfixed string%b.
 	  %BG%b: Treat %F{red}pattern%f as a %Bglob%b.
-	  %Bg%b: Replace %Bglobally%b.
+	  %Bg%b: Replace %Bglobally%b within the line.
+	  %B%%%b: Replace %Bglobally%b within the buffer.
 	  %Bi%b: (PCRE|glob only) Replace %Bcase-insensitively%b
 	  %BI%b: Replace %Bcase-sensitively%b
 	  %Bp%b: Treat %F{red}pattern%f as a %BPCRE%b.

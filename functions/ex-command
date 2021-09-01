@@ -31,6 +31,7 @@ elif [[ $REPLY = (#b)s(|ubstitute)([^[:alnum:]\&])* ]]; then
 			G) method=glob ;;
 			p) method=pcre ;;
 			g) global=1 ;;
+			[%B]) global=2 ;;
 			i) insens=1 ;;
 			I) insens=0 ;;
 			*) zle -M "$0: unknown flag, ignored: ${(q-)flag}"
@@ -60,18 +61,35 @@ elif [[ $REPLY = (#b)s(|ubstitute)([^[:alnum:]\&])* ]]; then
 			zle -M "$WIDGET: No previous search"
 			return 1
 		fi
+		if ((global == 2)); then
+			case $method in
+				*re) regexp-replace BUFFER "$find" "$repl" ;;
+				glob) BUFFER=${BUFFER//(#b)$~find/${(e)repl}} ;;
+				fixed) BUFFER=${BUFFER//(#b)$find/${(e)repl}} ;;
+				*)
+					zle -M "$WIDGET: Unknown method: $method"
+					return 1
+			esac
+		else
+			local -i cursor=CURSOR
+			local line=${LBUFFER##*$'\n'}${RBUFFER%%$'\n'*}
+			RBUFFER=${(M)RBUFFER%%$'\n'*}
+			LBUFFER=${(M)LBUFFER##*$'\n'}
+			case $global$method in
+				0*re) [[ $line =~ $find ]] && line=${line[1,MBEGIN-1]}${(e)repl}${line[MEND+1,-1]} ;;
+				1*re) regexp-replace line "$find" "$repl" ;;
+				0glob) line=${line/(#b)$~find/${(e)repl}} ;;
+				1glob) line=${line//(#b)$~find/${(e)repl}} ;;
+				0fixed) line=${line/(#b)$find/${(e)repl}} ;;
+				1fixed) line=${line//(#b)$find/${(e)repl}} ;;
+				*)
+					zle -M "$WIDGET: Unknown method: $method"
+					return 1
+			esac
+			BUFFER=$LBUFFER$line$RBUFFER
+			((CURSOR = $#LBUFFER + $#line < cursor ? $#LBUFFER + 1 : cursor))
+		fi
 
-		case $global$method in
-			0*re) [[ $RBUFFER =~ $2 ]] && RBUFFER=${RBUFFER[1,MBEGIN-1]}${(e)repl}${RBUFFER[MEND+1,-1]} ;;
-			1*re) regexp-replace BUFFER "$find" "$repl" ;;
-			0glob) RBUFFER=${RBUFFER/(#b)$~find/${(e)repl}} ;; 
-			1glob) BUFFER=${BUFFER//(#b)$~find/${(e)repl}} ;;
-			0fixed) RBUFFER=${RBUFFER/(#b)$find/${(e)repl}} ;; 
-			1fixed) BUFFER=${BUFFER//(#b)$find/${(e)repl}} ;;
-			*)
-				zle -M "$WIDGET: Unknown method: $method"
-				return 1
-		esac
 	else
 		zle -M "$WIDGET: Bad substitution"
 		return 1
